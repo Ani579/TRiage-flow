@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TriageFlow | AI Emergency Room Engine</title>
+    <meta name="description" content="Real-time intelligent ER triage and patient prioritization system.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="dark-theme">
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <div class="logo-icon large"></div>
+            <h2>TRIAGEFLOW OS</h2>
+            <div class="loader-bar"><div class="loader-fill"></div></div>
+            <p id="splash-status">Initializing AI Neural Engine...</p>
+        </div>
+    </div>
+
+    <div id="app">
+        <aside class="sidebar">
+            <div class="logo-container">
+                <div class="logo-icon"></div>
+                <h1>TriageFlow</h1>
+            </div>
+            <nav>
+                <button class="nav-item active" data-view="dashboard">
+                    <span class="icon">📊</span> Dashboard
+                </button>
+                <button class="nav-item" data-view="patients">
+                    <span class="icon">👥</span> Patient Queue
+                </button>
+                <button class="nav-item" data-view="beds">
+                    <span class="icon">🏥</span> Bed Registry
+                </button>
+                <button class="nav-item" data-view="admin">
+                    <span class="icon">⚙️</span> Command Center
+                </button>
+            </nav>
+            <div class="mci-toggle-container">
+                <div class="mci-label">MCI DISASTER MODE</div>
+                <label class="switch">
+                    <input type="checkbox" id="mci-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="mci-toggle-container" style="margin-top: 12px; background: rgba(0, 212, 255, 0.05); border-color: rgba(0, 212, 255, 0.1);">
+                <div class="mci-label" style="color: var(--accent);">VOICE ALERTS</div>
+                <label class="switch">
+                    <input type="checkbox" id="voice-toggle" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="sidebar-footer">
+                <div class="panel log-panel" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); height: 200px; padding: 12px; margin-bottom: 16px; font-size: 11px;">
+                    <h3 style="font-size: 10px; margin-bottom: 8px; color: var(--accent); opacity: 0.8;">LIVE CLINICAL LOG</h3>
+                    <div id="event-log" style="overflow-y: auto; height: 150px; display: flex; flex-direction: column; gap: 4px;">
+                        <!-- Events injected here -->
+                    </div>
+                </div>
+                <div class="status-indicator">
+                    <span class="pulse-dot"></span> System Live
+                </div>
+                <div class="clock" id="main-clock">00:00:00</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" placeholder="Search patient ID or condition..." id="search-patients">
+                </div>
+                <div class="header-stats">
+                    <div class="stat-pill">
+                        <span class="label">Beds:</span>
+                        <span class="value" id="bed-count">12 / 20</span>
+                    </div>
+                    <div class="stat-pill critical">
+                        <span class="label">Critical:</span>
+                        <span class="value" id="critical-count">3</span>
+                    </div>
+                    <div class="stat-pill incoming">
+                        <span class="label">Incoming:</span>
+                        <span class="value" id="incoming-count">2</span>
+                    </div>
+                    <div class="stat-pill status">
+                        <span class="label">Staff:</span>
+                        <span class="value" id="staff-count">24 Active</span>
+                    </div>
+                </div>
+            </header>
+
+            <div id="view-dashboard" class="app-view active">
+                <div class="analytics-strip">
+                <div class="analytic-item">
+                    <span class="label">Total in Queue:</span>
+                    <span class="value" id="total-waiting">0</span>
+                </div>
+                <div class="analytic-item">
+                    <span class="label">Median Wait:</span>
+                    <span class="value" id="median-wait">0m</span>
+                </div>
+                <div class="analytic-item">
+                    <span class="label">Facility Load:</span>
+                    <span class="value" id="facility-load">0%</span>
+                </div>
+                <div class="analytic-item">
+                    <span class="label">Protocol:</span>
+                    <span class="value" id="active-protocol">Standard ER</span>
+                </div>
+            </div>
+
+            <section class="dashboard-grid">
+                <!-- Main Queue Section -->
+                <div class="panel queue-panel">
+                    <div class="panel-header">
+                        <h2>Live Triage Queue</h2>
+                        <div class="filter-tabs">
+                            <button class="tab active">All</button>
+                            <button class="tab">Critical</button>
+                            <button class="tab">Waiting</button>
+                        </div>
+                    </div>
+                    <div class="queue-list" id="queue-container">
+                        <!-- Patients will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="side-panels">
+                    <!-- Bed Occupancy -->
+                    <div class="panel beds-panel">
+                        <div class="panel-header">
+                            <h2>ICU/ER Slots</h2>
+                        </div>
+                        <div class="bed-grid" id="bed-grid-container">
+                            <!-- Beds will be injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Incoming Ambulance -->
+                    <div class="panel incoming-panel">
+                        <div class="panel-header">
+                            <h2>Ambulance Pre-Arrival</h2>
+                        </div>
+                        <div class="incoming-list" id="incoming-container">
+                            <!-- Incoming patients injected here -->
+                        </div>
+                    </div>
+
+                    <!-- AI Insights -->
+                    <div class="panel insights-panel">
+                        <div class="panel-header">
+                            <h2>ER Saturation (Live)</h2>
+                        </div>
+                        <div class="insights-content">
+                            <div class="chart-container" id="chart-viz">
+                                <!-- SVG Chart injected here -->
+                            </div>
+                            <div id="insights-container">
+                                <div class="insight-card">
+                                    <p>System normalizing. Average wait time decreasing.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div> <!-- End Dashboard View -->
+
+            <div id="view-patients" class="app-view">
+                <div class="panel" style="height: 100%;">
+                    <div class="panel-header"><h2>Full Patient Census</h2></div>
+                    <div class="queue-list" id="full-queue-container" style="padding: 24px;"></div>
+                </div>
+            </div>
+
+            <div id="view-beds" class="app-view">
+                <div class="panel" style="height: 100%;">
+                    <div class="panel-header"><h2>Detailed Bed Registry</h2></div>
+                    <div class="bed-grid" id="full-bed-container" style="grid-template-columns: repeat(6, 1fr); padding: 24px;"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Command Panel (Modal-like or separate view overlay) -->
+        <div id="admin-modal" class="modal">
+            <div class="modal-content glass">
+                <h2>Emergency Command Center</h2>
+                <div class="form-group">
+                    <label>Add New Patient</label>
+                    <div class="input-row">
+                        <input type="text" id="p-name" placeholder="Name">
+                        <select id="p-severity">
+                            <option value="CRITICAL">Critical</option>
+                            <option value="HIGH">High</option>
+                            <option value="MEDIUM">Medium</option>
+                            <option value="LOW">Low</option>
+                        </select>
+                    </div>
+                    <input type="text" id="p-condition" placeholder="Primary Condition/Complaint">
+                    <button id="add-patient-btn" class="primary-btn">Inject Patient</button>
+                </div>
+                <div class="admin-actions">
+                    <button id="reset-system" class="danger-btn">System Reset</button>
+                    <button id="trigger-emergency" class="warning-btn">Trigger Disaster Exercise</button>
+                </div>
+                <button class="close-modal">×</button>
+            </div>
+        </div>
+
+        <!-- MCI Banner -->
+        <div id="mci-banner" class="mci-banner hidden">
+            <div class="banner-content">
+                <span class="warning-icon">⚠️</span>
+                <strong>MCI DISASTER MODE ACTIVE</strong>
+                <span>Protocol Shift: Prioritizing Survival Capacity & Resource Efficiency</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Alert Audio (Optional/Generated via JS) -->
+    <script src="js/engine.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
